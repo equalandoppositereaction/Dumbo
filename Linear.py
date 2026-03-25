@@ -13,7 +13,7 @@ def softmax(x: torch.Tensor, dim: int = 0, temperature: float = 1) -> torch.Tens
     return v_exp / v_exp.sum(dim=dim, keepdim=True)
 
 class Linear(nn.Module):
-    def __init__(self, in_features: int, out_features: int, device=None, dtype=None):
+    def __init__(self, in_features: int, out_features: int, device=None, dtype=None, swiglu=False):
         super().__init__()
         std = (2 / (in_features + out_features)) ** 0.5
         self.weights = nn.parameter.Parameter(
@@ -25,15 +25,16 @@ class Linear(nn.Module):
                 b=3*std
             )
         )
-        self.swiglu_weights = nn.parameter.Parameter(
-            nn.init.trunc_normal_(
-                torch.empty(out_features, in_features, device=device, dtype=dtype),
-                mean=0,
-                std=std,
-                a=-3*std,
-                b=3*std
+        if(swiglu):
+            self.swiglu_weights = nn.parameter.Parameter(
+                nn.init.trunc_normal_(
+                    torch.empty(out_features, in_features, device=device, dtype=dtype),
+                    mean=0,
+                    std=std,
+                    a=-3*std,
+                    b=3*std
+                )
             )
-        )
 
     def forward(self, x:torch.Tensor) -> torch.Tensor:
         return einsum(x, self.weights, "batch ... in_features, out_features in_features -> batch ... out_features")
@@ -48,3 +49,14 @@ class Linear(nn.Module):
         glu = einsum(x, self.swiglu_weights, "batch ... in_features, out_features in_features -> batch ... out_features")
         return torch.mul(silu, glu)
     
+class FCN(nn.Module):
+    def __init__(self, model_dim: int, int_dim: int, device=None, dtype=None):
+        super().__init__()
+        self.up = Linear(in_features=model_dim, out_features=int_dim, device=device, dtype=dtype, swiglu=True)
+        self.down = Linear(in_features=int_dim, out_features=model_dim, device=device, dtype=dtype)
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        up = self.up(x)
+        up = self.up.swiglu(y=up, x=x)
+        down = self.down(up)
+        return down
