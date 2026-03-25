@@ -9,7 +9,7 @@ import wandb
 
 import model as model_module
 
-data = np.memmap('fwedutokenized.bin', dtype=np.uint16, mode='r')
+data = np.fromfile('fwedutokenized.bin', dtype=np.uint16)
 TOTAL_TOKENS = len(data)
 
 
@@ -121,7 +121,7 @@ def train():
         optimizer.step()
         scheduler.step()
 
-        if step % 100 == 0:
+        if step % 10 == 0:
             tokens_done = (step + 1) * tokens_per_step
             lr = scheduler.get_last_lr()[0]
             wandb.log({"loss": loss.item(), "lr": lr, "tokens": tokens_done, "step": step})
