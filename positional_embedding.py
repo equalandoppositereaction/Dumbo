@@ -18,11 +18,18 @@ class RoPE(nn.Module):
         self.register_buffer("cos", cos, persistent=False)
         self.register_buffer("sin", sin, persistent=False)
 
-    def forward(self, x: torch.Tensor, token_positions: torch.Tensor) -> torch.Tensor:
+    def forward(self, x: torch.Tensor, token_positions: torch.Tensor = None, cos: torch.Tensor = None, sin: torch.Tensor = None) -> torch.Tensor:
         in_type = x.dtype
 
-        cos = self.cos[token_positions]
-        sin = self.sin[token_positions]
+        if cos is None or sin is None:
+            if token_positions is None:
+                raise ValueError("token_positions required when cos/sin not provided")
+            cos = self.cos[token_positions]
+            sin = self.sin[token_positions]
+
+        if cos.dim() == 3:
+            cos = cos.unsqueeze(1)
+            sin = sin.unsqueeze(1)
 
         x_pairs = rearrange(
             x.to(torch.float32), "... seq_len (d_k_half t) -> ... seq_len d_k_half t", t=2

@@ -1,7 +1,8 @@
 #all imports are in Linear.py
-import Linear
-import RMS
-import Attention
+from Linear import Linear
+from RMS import RMSNorm
+from Attention import GQA, softmax
+from Linear import FCN
 import torch
 import torch.nn as nn
 
@@ -17,7 +18,8 @@ class Block(nn.Module):
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         residual = x
         x = self.a_norm(x)                       #-> normalize input
-        attn_out = self.attention(x)             #-> pass through attn block
+        attn_mask = torch.triu(torch.ones(x.size(1), x.size(1), dtype=torch.bool), 1)[None, None] 
+        attn_out = self.attention(x, attention_mask=attn_mask)             #-> pass through attn block
 
         attn_out += residual                     #-> add residual
 
