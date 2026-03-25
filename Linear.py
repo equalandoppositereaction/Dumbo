@@ -39,7 +39,7 @@ class Linear(nn.Module):
         return einsum(x, self.weights, "batch ... in_features, out_features in_features -> batch ... out_features")
 
     
-    def swiglu(self, y:torch.Tensor, x:torch.Tensor) -> torch.Tensor:
+    def swiglu(self, y:torch.Tensor, x:torch.Tensor) -> torch.Tensor:  #-> #TODO: fix the structure
         '''
             y: Linear transformation on the input (forward(x))
             x: input

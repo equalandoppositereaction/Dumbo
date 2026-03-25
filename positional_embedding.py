@@ -2,10 +2,8 @@ import torch
 import torch.nn as nn
 from einops import rearrange
 
-
-
 class RoPE(nn.Module):
-    def __init__(self, theta: int=10_000, d_k: int=64, max_seq_len: int=4096, device=None):
+    def __init__(self, theta: int=10_000, d_k: int=64, max_seq_len: int=1024, device=None):
         super().__init__()
 
         thetas = torch.tensor(theta, device=device).unsqueeze(0).repeat(d_k // 2) #dont fully understand this block saw it in a repo
