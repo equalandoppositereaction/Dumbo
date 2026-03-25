@@ -1,4 +1,5 @@
 import math
+import os
 import numpy as np
 import torch
 import torch.nn as nn
@@ -26,6 +27,8 @@ BETAS = (0.9, 0.95)
 WANDB_API_KEY = "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"  
 WANDB_PROJECT = "fine-dumbo"
 WANDB_RUN_NAME = None
+CHECKPOINT_PATH = "checkpoint.pt"
+CHECKPOINT_EVERY_STEPS = 5000
 
 MODEL_CFG = {
     'num_layers': 16,
@@ -49,18 +52,21 @@ def get_batch(x, batch_size, context_length, device):
     
     return inputs, targets
 
-def save_checkpoint(model, optimizer, iteration, out):
+def save_checkpoint(model, optimizer, scheduler, iteration, out):
     checkpoint = {
         'model_state_dict': model.state_dict(),
         'optimizer_state_dict': optimizer.state_dict(),
+        'scheduler_state_dict': scheduler.state_dict(),
         'iteration': iteration
     }
     torch.save(checkpoint, out)
 
-def load_checkpoint(src, model, optimizer):
-    checkpoint = torch.load(src)
+def load_checkpoint(src, model, optimizer, scheduler):
+    checkpoint = torch.load(src, map_location='cpu')
     model.load_state_dict(checkpoint['model_state_dict'])
     optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+    if 'scheduler_state_dict' in checkpoint:
+        scheduler.load_state_dict(checkpoint['scheduler_state_dict'])
     iteration = checkpoint['iteration']
     return iteration
 
@@ -91,6 +97,12 @@ def train():
     optimizer = AdamW(net.parameters(), lr=LEARNING_RATE, betas=BETAS, weight_decay=WEIGHT_DECAY)
     scheduler = build_scheduler(optimizer, warmup_steps=WARMUP_STEPS, total_steps=total_steps, min_lr_ratio=MIN_LR_RATIO)
 
+    start_step = 0
+    if os.path.exists(CHECKPOINT_PATH):
+        last_step = load_checkpoint(CHECKPOINT_PATH, net, optimizer, scheduler)
+        start_step = last_step + 1
+        print(f"Resumed from {CHECKPOINT_PATH} at step={last_step}")
+
     if WANDB_API_KEY:
         wandb.login(key=WANDB_API_KEY)
         wandb.init(project=WANDB_PROJECT, name=WANDB_RUN_NAME, config={
@@ -108,7 +120,7 @@ def train():
     else:
         wandb.init(mode="disabled")
 
-    for step in range(total_steps):
+    for step in range(start_step, total_steps):
         inputs, targets = get_batch(data, BATCH_SIZE, CONTEXT_LENGTH, cfg['device'])
         optimizer.zero_grad(set_to_none=True)
         logits = net(inputs)
@@ -126,6 +138,13 @@ def train():
             lr = scheduler.get_last_lr()[0]
             wandb.log({"loss": loss.item(), "lr": lr, "tokens": tokens_done, "step": step})
             print(f"step={step} loss={loss.item():.4f} lr={lr:.6f} tokens={tokens_done}")
+
+        if (step + 1) % CHECKPOINT_EVERY_STEPS == 0:
+            save_checkpoint(net, optimizer, scheduler, step, CHECKPOINT_PATH)
+            print(f"Saved checkpoint at step={step} -> {CHECKPOINT_PATH}")
+
+    save_checkpoint(net, optimizer, scheduler, total_steps - 1, CHECKPOINT_PATH)
+    print(f"Saved final checkpoint -> {CHECKPOINT_PATH}")
 
 
 if __name__ == "__main__":
