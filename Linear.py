@@ -1,7 +1,6 @@
 import torch
 import torch.nn as nn
 from einops import einsum
-from einops import rearrange
 
 def softmax(x: torch.Tensor, dim: int = 0, temperature: float = 1) -> torch.Tensor:  
     v = x - x.max(dim=dim, keepdim=True)[0]
@@ -50,10 +49,10 @@ class Linear(nn.Module):
         return torch.mul(silu, glu)
     
 class FCN(nn.Module):
-    def __init__(self, model_dim: int, int_dim: int, device=None, dtype=None):
+    def __init__(self, d_model: int, int_dim: int, device=None, dtype=None):
         super().__init__()
-        self.up = Linear(in_features=model_dim, out_features=int_dim, device=device, dtype=dtype, swiglu=True)
-        self.down = Linear(in_features=int_dim, out_features=model_dim, device=device, dtype=dtype)
+        self.up = Linear(in_features=d_model, out_features=int_dim, device=device, dtype=dtype, swiglu=True)
+        self.down = Linear(in_features=int_dim, out_features=d_model, device=device, dtype=dtype)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         up = self.up(x)
