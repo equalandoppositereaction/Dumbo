@@ -14,29 +14,29 @@ data = np.fromfile('fwedutokenized.bin', dtype=np.uint16)
 TOTAL_TOKENS = len(data)
 
 
-BATCH_SIZE = 16
-CONTEXT_LENGTH = 512
+BATCH_SIZE = 160
+CONTEXT_LENGTH = 256
 LEARNING_RATE = 2e-4
 WEIGHT_DECAY = 0.1
-WARMUP_STEPS = 200
-MAX_STEPS = 20000  
-MIN_LR_RATIO = 0.08  
+WARMUP_STEPS = 300
+MAX_STEPS = 3500  
+MIN_LR_RATIO = 0.01 
 GRAD_CLIP_NORM = 1.0
 BETAS = (0.9, 0.95)
 
 WANDB_API_KEY = "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"  
-WANDB_PROJECT = "fine-dumbo"
+WANDB_PROJECT = "fine-dumbo-smol"
 WANDB_RUN_NAME = None
 CHECKPOINT_PATH = "checkpoint.pt"
 CHECKPOINT_EVERY_STEPS = 2048
 
 MODEL_CFG = {
-    'num_layers': 12,
-    'vocab_size': 40960,  
-    'd_model': 1024,
-    'fcn_dim': 3584,
-    'num_heads': 16,
-    'num_groups': 4,
+    'num_layers': 8,
+    'vocab_size': 40960,  #->20M!, now 10M, still a lot, ono
+    'd_model': 256,
+    'fcn_dim': 680,
+    'num_heads': 4,
+    'num_groups': 2,
     'device': 'cuda',
     'dtype': torch.bfloat16,
 }
@@ -103,22 +103,20 @@ def train():
         start_step = last_step + 1
         print(f"Resumed from {CHECKPOINT_PATH} at step={last_step}")
 
-    if WANDB_API_KEY:
-        wandb.login(key=WANDB_API_KEY)
-        wandb.init(project=WANDB_PROJECT, name=WANDB_RUN_NAME, config={
-            "batch_size": BATCH_SIZE,
-            "context_length": CONTEXT_LENGTH,
-            "lr": LEARNING_RATE,
-            "weight_decay": WEIGHT_DECAY,
-            "warmup_steps": WARMUP_STEPS,
-            "min_lr_ratio": MIN_LR_RATIO,
-            "grad_clip_norm": GRAD_CLIP_NORM,
-            "betas": BETAS,
-            "total_tokens": TOTAL_TOKENS,
-            "model_cfg": MODEL_CFG,
-        })
-    else:
-        wandb.init(mode="disabled")
+    wandb.login(key=WANDB_API_KEY)
+    wandb.init(project=WANDB_PROJECT, name=WANDB_RUN_NAME, config={
+        "batch_size": BATCH_SIZE,
+        "context_length": CONTEXT_LENGTH,
+        "lr": LEARNING_RATE,
+        "weight_decay": WEIGHT_DECAY,
+        "warmup_steps": WARMUP_STEPS,
+        "min_lr_ratio": MIN_LR_RATIO,
+        "grad_clip_norm": GRAD_CLIP_NORM,
+        "betas": BETAS,
+        "total_tokens": TOTAL_TOKENS,
+        "model_cfg": MODEL_CFG,
+    })
+
 
     for step in range(start_step, total_steps):
         inputs, targets = get_batch(data, BATCH_SIZE, CONTEXT_LENGTH, cfg['device'])

@@ -42,7 +42,7 @@ spm.SentencePieceTrainer.Train(
                             "<|extra_0|>", "<|extra_1|>", "<|extra_2|>", "<|extra_3|>", "<|extra_4|>"
                            ],
     remove_extra_whitespaces=False,
-    max_sentence_length=4096,
+    max_sentence_length=100000,
     train_extremely_large_corpus=True,
     input_sentence_size=2000000,       #Samples 2 million lines
     num_threads=32                      #config of the VM
