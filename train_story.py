@@ -10,32 +10,32 @@ import wandb
 
 import model as model_module
 
-data = np.fromfile('fwedutokenized.bin', dtype=np.uint16)
+data = np.fromfile('tinytokenized.bin', dtype=np.uint16)
 TOTAL_TOKENS = len(data)
 
 
-BATCH_SIZE = 16
-CONTEXT_LENGTH = 512
+BATCH_SIZE = 32
+CONTEXT_LENGTH = 256
 LEARNING_RATE = 2e-4
 WEIGHT_DECAY = 0.1
 WARMUP_STEPS = 200
-MAX_STEPS = 20000  
-MIN_LR_RATIO = 0.08  
+MAX_STEPS = 30000
+MIN_LR_RATIO = 0.1  
 GRAD_CLIP_NORM = 1.0
 BETAS = (0.9, 0.95)
 
 WANDB_API_KEY = "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"  
-WANDB_PROJECT = "fine-dumbo"
+WANDB_PROJECT = "story-dumbo"
 WANDB_RUN_NAME = None
 CHECKPOINT_PATH = "checkpoint.pt"
 CHECKPOINT_EVERY_STEPS = 2048
 
 MODEL_CFG = {
     'num_layers': 12,
-    'vocab_size': 40960,  
-    'd_model': 1024,
-    'fcn_dim': 3584,
-    'num_heads': 16,
+    'vocab_size': 10240,  # fill from tokenizer
+    'd_model': 512,
+    'fcn_dim': 1536,
+    'num_heads': 8,
     'num_groups': 4,
     'device': 'cuda',
     'dtype': torch.bfloat16,
