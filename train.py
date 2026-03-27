@@ -28,7 +28,7 @@ WANDB_API_KEY = "wandb_v1_9uoC5O9XDTQNjWhwIAMR2DB4iyJ_p3p35AG46NmLRCbawJYAUQ17rB
 WANDB_PROJECT = "fine-dumbo-smol"
 WANDB_RUN_NAME = None
 CHECKPOINT_PATH = "checkpoint.pt"
-CHECKPOINT_EVERY_STEPS = 2048
+CHECKPOINT_EVERY_STEPS = 2048 #-> why is it 2k i set it at 1k?
 
 MODEL_CFG = {
     'num_layers': 8,

@@ -31,7 +31,7 @@ class GQA(nn.Module):
         self.key_proj = Linear(d_model, d_model, device=device, dtype=dtype)
         self.value_proj = Linear(d_model, d_model, device=device, dtype=dtype)
         self.out_proj = Linear(d_model, d_model, device=device, dtype=dtype)
-        self.rope = RoPE(device=device)
+        self.rope = RoPE(d_k=self.head_dim, device=device)
         #self.position_ids = torch.arange(max_seq_len, device=device).unsqueeze(0).expand(batch_size, -1)
  
     def forward(self, x: torch.Tensor, attention_mask: torch.Tensor = None) -> torch.Tensor:

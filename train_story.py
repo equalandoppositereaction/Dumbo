@@ -14,12 +14,12 @@ data = np.fromfile('tinytokenized.bin', dtype=np.uint16)
 TOTAL_TOKENS = len(data)
 
 
-BATCH_SIZE = 256 #can be more, 71% memory utilization
+BATCH_SIZE = 320 
 CONTEXT_LENGTH = 256
 LEARNING_RATE = 2e-4
 WEIGHT_DECAY = 0.1
-WARMUP_STEPS = 100 #should be even lower
-MAX_STEPS = None
+WARMUP_STEPS = 500 
+MAX_STEPS = 10000
 MIN_LR_RATIO = 0.01 
 GRAD_CLIP_NORM = 1.0
 BETAS = (0.9, 0.95)
@@ -28,15 +28,15 @@ WANDB_API_KEY = "wandb_v1_9uoC5O9XDTQNjWhwIAMR2DB4iyJ_p3p35AG46NmLRCbawJYAUQ17rB
 WANDB_PROJECT = "story-dumbo"
 WANDB_RUN_NAME = None
 CHECKPOINT_PATH = "checkpoint.pt"
-CHECKPOINT_EVERY_STEPS = 1024
+CHECKPOINT_EVERY_STEPS = 500
 
 MODEL_CFG = {
-    'num_layers': 8,
-    'vocab_size': 10240,  # fill from tokenizer
-    'd_model': 256,
-    'fcn_dim': 680,
-    'num_heads': 4,
-    'num_groups': 2,
+    'num_layers': 4,
+    'vocab_size': 10240,  
+    'd_model': 512,
+    'fcn_dim': 1344,
+    'num_heads': 16,
+    'num_groups': 8,
     'device': 'cuda',
     'dtype': torch.bfloat16,
 }
@@ -143,9 +143,10 @@ def train():
             save_checkpoint(net, optimizer, scheduler, step, CHECKPOINT_PATH)
             print(f"Saved checkpoint at step={step} -> {CHECKPOINT_PATH}")
 
-    save_checkpoint(net, optimizer, scheduler, total_steps - 1, CHECKPOINT_PATH)
+    torch.save(net.state_dict(), CHECKPOINT_PATH)
     print(f"Saved final checkpoint -> {CHECKPOINT_PATH}")
 
 
 if __name__ == "__main__":
+    print(TOTAL_TOKENS)
     train()
