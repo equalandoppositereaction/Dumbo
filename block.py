@@ -1,7 +1,7 @@
-#all imports are in Linear.py
 from Linear import Linear
+from Attention import GQA
 from RMS import RMSNorm
-from Attention import GQA, softmax
+#from Attention import GQA, softmax
 from Linear import FCN
 import torch
 import torch.nn as nn
@@ -10,7 +10,7 @@ class Block(nn.Module):
     def __init__(self, d_model: int, num_heads: int, num_groups: int, fcn_dim: int, device=None, dtype=None):
         super().__init__()
         self.a_norm = RMSNorm(d_model=d_model, device=device, dtype=dtype)
-        self.attention = GQA(d_model=d_model, num_heads=num_heads, num_groups=num_groups, device=device, dtype=dtype)
+        self.attention = GQA(d_model=d_model, num_heads=num_heads, num_groups=num_groups).to(device=device, dtype=dtype)
 
         self.f_norm = RMSNorm(d_model=d_model, device=device, dtype=dtype)
         self.fcn = FCN(d_model=d_model, int_dim=fcn_dim, device=device, dtype=dtype)
@@ -18,9 +18,7 @@ class Block(nn.Module):
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         residual = x
         x = self.a_norm(x)                       #-> normalize input
-        attn_mask = torch.triu(torch.ones(x.size(1), x.size(1), dtype=torch.bool), 1)[None, None] 
-        attn_out = self.attention(x, attention_mask=attn_mask)             #-> pass through attn block
-
+        attn_out= self.attention(x)
         attn_out += residual                     #-> add residual
 
         attn_out = self.f_norm(attn_out)         #-> normalize the attn output + residual

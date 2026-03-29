@@ -6,21 +6,21 @@ import model as model_module
 from tokenizer import Tokenizer
 
 MODEL_CFG = {
-    'num_layers': 6,
+    'num_layers': 8,
     'vocab_size': 10240,
     'd_model': 512,
-    'fcn_dim': 1344,
-    'num_heads': 16,
-    'num_groups': 8,
+    'fcn_dim': 1792,
+    'num_heads': 8,
+    'num_groups': 4,
     'device': 'cuda',
     'dtype': torch.bfloat16,
 }
 
-PROMPT = "Once upon a time, there lived a little girl named Lilly. She"
+PROMPT = "<|beginoftext|> Once upon a time, there lived a little girl named Lilly. She"
 MAX_CONTEXT = 256
-MAX_NEW_TOKENS = 128
-TEMPERATURE = 0.8
-TOP_K = 40
+MAX_NEW_TOKENS = 256
+TEMPERATURE = 0.95
+TOP_K = 50
 
 
 def pick_tokenizer_model() -> str:
@@ -71,7 +71,7 @@ def main() -> None:
 
     net = model_module.Dumbo(**cfg).to(cfg['device'])
 
-    checkpoint = torch.load("checkpoint.pt", map_location='cpu')
+    checkpoint = torch.load("tiny_dumbo.pt", map_location='cpu')
     state_dict = checkpoint.get('model_state_dict', checkpoint)
     net.load_state_dict(state_dict)
 

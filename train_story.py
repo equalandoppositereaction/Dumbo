@@ -14,12 +14,12 @@ data = np.fromfile('tinytokenized.bin', dtype=np.uint16)
 TOTAL_TOKENS = len(data)
 
 
-BATCH_SIZE = 320 
+BATCH_SIZE = 192
 CONTEXT_LENGTH = 256
 LEARNING_RATE = 2e-4
 WEIGHT_DECAY = 0.1
-WARMUP_STEPS = 500 
-MAX_STEPS = 10000
+WARMUP_STEPS = 600 
+MAX_STEPS = None
 MIN_LR_RATIO = 0.01 
 GRAD_CLIP_NORM = 1.0
 BETAS = (0.9, 0.95)
@@ -27,16 +27,16 @@ BETAS = (0.9, 0.95)
 WANDB_API_KEY = "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"  
 WANDB_PROJECT = "story-dumbo"
 WANDB_RUN_NAME = None
-CHECKPOINT_PATH = "checkpoint.pt"
+CHECKPOINT_PATH = "tiny_dumbo.pt"
 CHECKPOINT_EVERY_STEPS = 500
 
 MODEL_CFG = {
-    'num_layers': 4,
+    'num_layers': 8,
     'vocab_size': 10240,  
     'd_model': 512,
-    'fcn_dim': 1344,
-    'num_heads': 16,
-    'num_groups': 8,
+    'fcn_dim': 1792,
+    'num_heads': 8,
+    'num_groups': 4,
     'device': 'cuda',
     'dtype': torch.bfloat16,
 }
@@ -56,7 +56,7 @@ def save_checkpoint(model, optimizer, scheduler, iteration, out):
     checkpoint = {
         'model_state_dict': model.state_dict(),
         'optimizer_state_dict': optimizer.state_dict(),
-        #'scheduler_state_dict': scheduler.state_dict(),
+        'scheduler_state_dict': scheduler.state_dict(),
         'iteration': iteration
     }
     torch.save(checkpoint, out)

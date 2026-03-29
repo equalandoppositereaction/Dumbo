@@ -19,7 +19,7 @@ model_type = "bpe"
 
 def text_iterator(dataset):
     for i, row in enumerate(dataset):
-        combined_text = "<|beginoftext|>" + row["text"] + "<|endoftext|>"
+        combined_text = row["text"] + "<|endoftext|>"
         yield combined_text
         
 
@@ -32,19 +32,23 @@ spm.SentencePieceTrainer.Train(
     byte_fallback=True,
     split_by_unicode_script=True,
     split_by_number=True,
-    bos_piece='<|beginoftext|>',
+    pad_id=0,                
+    unk_id=1,
+    bos_id=2,
+    eos_id=3,
+    bos_piece='<|startoftext|>', #never used
     pad_piece='<|pad|>',
     unk_piece='<|unk|>',
     eos_piece='<|endoftext|>',
     user_defined_symbols=["'s", "'t", "'re", "'ve", "'m", "'ll", "'d",      #tried to replicate the regex line fropm gpt4
                             "<|user|>", "<|system|>", "<|assistant|>", "<|im_start|>", "<|im_end|>",
-                            "<|thought|>", "</|thought|>","<|search_query|>", "</|search_query|>", "<|search_results|>","</|search_results|>", "\n",
+                            "<|thought|>", "</|thought|>","<|search_query|>", "</|search_query|>", "<|search_results|>","</|search_results|>", "\n", #just in case
                             "<|extra_0|>", "<|extra_1|>", "<|extra_2|>", "<|extra_3|>", "<|extra_4|>"
                            ],
     remove_extra_whitespaces=False,
     max_sentence_length=100000,
     train_extremely_large_corpus=True,
-    input_sentence_size=2000000,       #Samples 2 million lines
+    input_sentence_size=9000000,       #Samples 2 million lines
     num_threads=32                      #config of the VM
     )
 
