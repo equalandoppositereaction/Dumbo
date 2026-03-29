@@ -17,12 +17,11 @@ model_prefix = "fwedu32k"
 vocab_size = 40960    #512x80
 model_type = "bpe"
 
-#Add eos & bos token at the end of every row, i.e. I am stupid for listening to clankers
-#this is the only place where I fully trused a clanker and this is the worst thing to exist in the  whole codebase
+
 def text_iterator(dataset):
     for i, row in enumerate(dataset):
-        combined_text = "<|beginoftext|>" + row["text"] + "<|endoftext|>" #there is absolutely no use of putting these 2 tokens here but I have no idea why I even did this
-        yield combined_text
+        combined_text = row["text"] + "<|endoftext|>" 
+        yield combined_text #the bos created bugs
 
 spm.SentencePieceTrainer.Train(
     sentence_iterator=text_iterator(dataset),
@@ -45,7 +44,7 @@ spm.SentencePieceTrainer.Train(
     remove_extra_whitespaces=False,
     max_sentence_length=800000,
     train_extremely_large_corpus=True,
-    input_sentence_size=2500000,       #Samples 2 million lines
+    input_sentence_size=2500000,      
     shuffle_input_sentence=True,
     num_threads=16                      #config of the VM
     )

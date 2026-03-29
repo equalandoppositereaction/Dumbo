@@ -22,7 +22,6 @@ def stream_encode(dataset, tok: Tokenizer, outfile: str, bos: bool, eos: bool, l
     buffer: list[np.ndarray] = []
 
     def encode_batch(texts: list[str]) -> list[np.ndarray]:
-        # Use sentencepiece's built-in batch/num_threads when available; fall back quietly.
         try:
             encoded = tok.sp_model.encode(texts, out_type=int, num_threads=threads)
         except TypeError:

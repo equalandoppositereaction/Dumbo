@@ -44,7 +44,7 @@ class GQA(nn.Module):
         cos = self.rope.cos[position_ids].unsqueeze(2)  # (batch, seq_len, 1, d_k/2)
         sin = self.rope.sin[position_ids].unsqueeze(2)  # (batch, seq_len, 1, d_k/2)
 
-        queries = self.rope(x=queries, token_positions=None, cos=cos, sin=sin)                                                       #->apply RoPE
+        queries = self.rope(x=queries, token_positions=None, cos=cos, sin=sin)                                             #->apply RoPE
         keys = self.rope(x=keys, token_positions=None, cos=cos, sin=sin)
 
         queries = queries.view(batch_size, seq_len, self.num_groups, self.num_heads // self.num_groups, self.head_dim)
@@ -56,15 +56,15 @@ class GQA(nn.Module):
         values = values.repeat_interleave(self.num_heads // self.num_groups, dim=2)
  
         queries = queries.permute(0, 2, 1, 3)  # (batch, heads, seq, head_dim)
-        keys = keys.permute(0, 2, 1, 3)        # (batch, heads, seq, head_dim)
-        values = values.permute(0, 2, 1, 3)    # (batch, heads, seq, head_dim)
+        keys = keys.permute(0, 2, 1, 3)        
+        values = values.permute(0, 2, 1, 3)   
 
         attn_scores = torch.matmul(queries, keys.transpose(-2, -1)) / (self.head_dim ** 0.5)  # (batch, heads, seq, seq)
         if attention_mask is not None:
             attn_scores = attn_scores.masked_fill(attention_mask.to(attn_scores.device), float("-inf"))
         attn_probs = softmax(attn_scores, dim=-1)
 
-        attn_output = torch.matmul(attn_probs, values)  # (batch, heads, seq, head_dim)
+        attn_output = torch.matmul(attn_probs, values)  
         attn_output = attn_output.permute(0, 2, 1, 3).contiguous().view(batch_size, seq_len, -1)
         output = self.out_proj(attn_output)
         return output
