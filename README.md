@@ -1,15 +1,15 @@
----
-title: Tiny Dumbo
-date: 2026-03-29 23:29:23 +0530
-categories: [LM]
-tags: []     
-description: >-
-  A pre-trained extreamly small auto regressive model trained on 0.94B tokens of tiny stories
-pin: true
----
 
-![Dumbo](/assets/img/dumbo_mascot.png){: width="800" }
-_Our beloved MASCOT!!!_
+<h1 align="center">TinyDumbo</h1>
+
+<p align="center">
+  A pre-trained extreamly small auto regressive model trained on tiny stories
+</p>
+
+
+![Dumbo](/assets/img/dumbo_mascot.png)
+<p align="center">
+  _Our beloved MASCOT!!!_
+</p>
 
 
 There was no use of Large Language Models involved during the creation of this project other than code reviews.
@@ -30,7 +30,7 @@ This report was took 4 hours (~12AM to 4AM) to make.
 
 ---
 
-## Architecture {#architecture}
+## Architecture
 
 The architectural choices were simple, whatever was the best technique I had knowledge of were to be used.
 It ended up being a llama2-ish model. 
@@ -145,7 +145,7 @@ GRAD_CLIP_NORM = 1.0
 BETAS = (0.9, 0.95)
 ```
 
-## Hardware and Training {#hardware}
+## Hardware and Training
 All of the training, inference and storage was done on Google Cloud and its Virtual Machines.
 
 ### Training the Tokenizer
@@ -163,35 +163,44 @@ A total of ₹8,420 worth Google Cloud credits have been utilized with about 7k 
 It is worth noting the final model was not the only model trained in this amount as I also trained few models on FineWebEdu but they were too smal to output any comprehendable text.
 (also, I over-slept during one of the runs and the VM kept running for about 6.5 extra hours)
 
-## Training Log {#log}
+## Training Log
 I used wandb.ai's logger for logging during this project. It is free with institution IDs.
 
 The legend names are formated as [no._of_blocks, fcn_dim, warmup_steps]
 
-![Note that aqua has higher fcn_dim than pink still they achive identical loss, even at the micro scale!](/assets/pictures/tiny_dumbo/tiny_dumbo_loss.png){: width="800" }
-_Cross Entropy Loss of per run._
+![Note that aqua has higher fcn_dim than pink still they achive identical loss, even at the micro scale!](/assets/pictures/tiny_dumbo/tiny_dumbo_loss.png)
+<p align="center">
+  _Cross Entropy Loss of per run_
+</p>
+
 Note that aqua has higher fcn_dim than pink still they achive identical loss, even at the micro scale!
 
-![Note that so far aqua and pink has similar performance and learning rate per step, this will be relevent in the next part](/assets/pictures/tiny_dumbo/tiny_dumbo_lr.png){: width="800" }
-_Learning rate throughout the runs._
+![Note that so far aqua and pink has similar performance and learning rate per step, this will be relevent in the next part](/assets/pictures/tiny_dumbo/tiny_dumbo_lr.png)
+<p align="center">
+  _Learning rate throughout the runs_
+</p>
+
 Note that so far aqua and pink has similar performance and learning rate per step, this will be relevent in the next part
 
 ### A Cool Observation!
 
-![GPU memory utilized by every run](/assets/pictures/tiny_dumbo/tiny_dumbo_gpu.png){: width="800" }
-_GPU memory utilized by every run._
-
+![GPU memory utilized by every run](/assets/pictures/tiny_dumbo/tiny_dumbo_gpu.png)
+<p align="center">
+  _GPU memory utilized by every run_
+</p>
 
 Note that the run in Grey had the highest allocation of memory, then Pink and Aqua had the least out of the three. That means the machine could spent more time in computation during Grey's run compared to Aqua as it has to fetch the data from the drive less often. This is also supported in next image!
 
-![Disk IO during every run](/assets/pictures/tiny_dumbo/tiny_dumbo_disk.png){: width="800" }
-_Disk IO during every run._
+![Disk IO during every run](/assets/pictures/tiny_dumbo/tiny_dumbo_disk.png)
+<p align="center">
+  _Disk IO during every run_
+</p>
 
 We know that disk I/O are extreamly slow, we also know that larger models have more things to compute and hence take more time to train.
 
 Keeping these things in mind we can hypothise that Aqua should take more time to train given its high Disk I/O and larger size. This did not happen and by some devine intervention Aqua completed its training significantly earlier than pink! (you can see in the GPU memory graph that aqua finished before pink) Even on the exact same machine, data, learning rate etc!
 
-## Outcome {#outcome}
+## Outcome
 
 The expected outcome was for the model to produce gramatically correct coherent output. However, (maybe because of its small size) the final outputs were not coherent (at all) but somewhat gramatically mediocure.
 
@@ -220,7 +229,7 @@ With prompt: "<|beginoftext|> Once upon a time, there lived a little girl named 
 2. <|beginoftext|> Once upon a time, there lived a little girl named Lilly. She saw that. He decided a big smile, "I'm no longer scared, but you have to be friends?" Suddenly, the boat said, "You're welcome, we need to find it! You need to have a good way to go on an adventure." The next morning, the boy said, "You can't play in the park. It can have a lot of fun! The ball is very important to eat it." The little boy smiled, said, "It's!" The boy smiled. The girl said, "Hello so I want to stay here to see you."
 ```
 
-## Failed Runs and Major BUGS {#bugs}
+## Failed Runs and Major BUGS
 
 ### I
 The first few runs (on a different dataset) had absolute gibrish as outputs as I had used only 4 layers, 256 d_model and 2.66 as the d_model/fcn_dim ratio so the model size excluding embeddings was about 3-4M! (8-9M including the embeddings). It also had the bug described in section **II**.
@@ -264,16 +273,20 @@ This bug almost made me quit this project. But I came back the next day and trai
 
 I wanted to experiment with different warmup_steps, during this, it was observed that no warmup steps resulted in the model's loss plateauing (probably NaN loss?) as shown bellow by the yellow run.
 
-![nan loss lr](/assets/pictures/tiny_dumbo/tiny_dumbo_nan_lr.png){: width="600" }
-_In the other runs the learning rate start from 0 and then rises to lr, here the learning rate start from lr._
+![nan loss lr](/assets/pictures/tiny_dumbo/tiny_dumbo_nan_lr.png)
+<p align="center">
+  _In the other runs the learning rate start from 0 and then rises to lr, here the learning rate start from lr_
+</p>
 
-![nan loss](/assets/pictures/tiny_dumbo/tiny_dumbo_nan.png){: width="600" }
-_This was larger than any of the above models with 16 layers and 1024 d_model._
+
+![nan loss](/assets/pictures/tiny_dumbo/tiny_dumbo_nan.png)
+<p align="center">
+  _This was larger than any of the above models with 16 layers and 1024 d_model_
+</p>
+
 
 The reason is, during the inisial phase, the weights are random so the gradients are huge, a large learning rate could add to the fuel and the steps would be soo big that they jump out of the 16 bit float value.
 
-## Learnings and Conclusion {#conclusion}
+## Learnings and Conclusion
 
-
-
-#TODO
+I have no idea why I even decided to have this section lol.
