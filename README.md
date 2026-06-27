@@ -8,7 +8,7 @@
 
 ![Dumbo](/assets/img/dumbo_mascot.png)
 <p align="center">
-  _Our beloved MASCOT!!!_
+  <em>Our beloved MASCOT!!!</em>
 </p>
 
 
@@ -170,14 +170,14 @@ The legend names are formated as [no._of_blocks, fcn_dim, warmup_steps]
 
 ![Note that aqua has higher fcn_dim than pink still they achive identical loss, even at the micro scale!](/assets/pictures/tiny_dumbo/tiny_dumbo_loss.png)
 <p align="center">
-  _Cross Entropy Loss of per run_
+  <em>Cross Entropy Loss of per run</em>
 </p>
 
 Note that aqua has higher fcn_dim than pink still they achive identical loss, even at the micro scale!
 
 ![Note that so far aqua and pink has similar performance and learning rate per step, this will be relevent in the next part](/assets/pictures/tiny_dumbo/tiny_dumbo_lr.png)
 <p align="center">
-  _Learning rate throughout the runs_
+  <em>Learning rate throughout the runs</em>
 </p>
 
 Note that so far aqua and pink has similar performance and learning rate per step, this will be relevent in the next part
@@ -186,14 +186,14 @@ Note that so far aqua and pink has similar performance and learning rate per ste
 
 ![GPU memory utilized by every run](/assets/pictures/tiny_dumbo/tiny_dumbo_gpu.png)
 <p align="center">
-  _GPU memory utilized by every run_
+  <em>GPU memory utilized by every run</em>
 </p>
 
 Note that the run in Grey had the highest allocation of memory, then Pink and Aqua had the least out of the three. That means the machine could spent more time in computation during Grey's run compared to Aqua as it has to fetch the data from the drive less often. This is also supported in next image!
 
 ![Disk IO during every run](/assets/pictures/tiny_dumbo/tiny_dumbo_disk.png)
 <p align="center">
-  _Disk IO during every run_
+  <em>Disk IO during every run</em>
 </p>
 
 We know that disk I/O are extreamly slow, we also know that larger models have more things to compute and hence take more time to train.
@@ -275,13 +275,13 @@ I wanted to experiment with different warmup_steps, during this, it was observed
 
 ![nan loss lr](/assets/pictures/tiny_dumbo/tiny_dumbo_nan_lr.png)
 <p align="center">
-  _In the other runs the learning rate start from 0 and then rises to lr, here the learning rate start from lr_
+  <em>In the other runs the learning rate start from 0 and then rises to lr, here the learning rate start from lr</em>
 </p>
 
 
 ![nan loss](/assets/pictures/tiny_dumbo/tiny_dumbo_nan.png)
 <p align="center">
-  _This was larger than any of the above models with 16 layers and 1024 d_model_
+  <em>This was larger than any of the above models with 16 layers and 1024 d_model</em>
 </p>
 
 
