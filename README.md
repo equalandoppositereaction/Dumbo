@@ -6,8 +6,7 @@
 </p>
 
 
-![Dumbo](/assets/img/dumbo_mascot.png)
-<p align="center">
+![Dumbo](/assets/img/dumbo_mascot.png) <p align="center">
   <em>Our beloved MASCOT!!!</em>
 </p>
 
@@ -168,15 +167,13 @@ I used wandb.ai's logger for logging during this project. It is free with instit
 
 The legend names are formated as [no._of_blocks, fcn_dim, warmup_steps]
 
-![Note that aqua has higher fcn_dim than pink still they achive identical loss, even at the micro scale!](/assets/pictures/tiny_dumbo/tiny_dumbo_loss.png)
-<p align="center">
+![Note that aqua has higher fcn_dim than pink still they achive identical loss, even at the micro scale!](/assets/pictures/tiny_dumbo/tiny_dumbo_loss.png) <p align="center">
   <em>Cross Entropy Loss of per run</em>
 </p>
 
 Note that aqua has higher fcn_dim than pink still they achive identical loss, even at the micro scale!
 
-![Note that so far aqua and pink has similar performance and learning rate per step, this will be relevent in the next part](/assets/pictures/tiny_dumbo/tiny_dumbo_lr.png)
-<p align="center">
+![Note that so far aqua and pink has similar performance and learning rate per step, this will be relevent in the next part](/assets/pictures/tiny_dumbo/tiny_dumbo_lr.png) <p align="center">
   <em>Learning rate throughout the runs</em>
 </p>
 
@@ -184,15 +181,13 @@ Note that so far aqua and pink has similar performance and learning rate per ste
 
 ### A Cool Observation!
 
-![GPU memory utilized by every run](/assets/pictures/tiny_dumbo/tiny_dumbo_gpu.png)
-<p align="center">
+![GPU memory utilized by every run](/assets/pictures/tiny_dumbo/tiny_dumbo_gpu.png) <p align="center">
   <em>GPU memory utilized by every run</em>
 </p>
 
 Note that the run in Grey had the highest allocation of memory, then Pink and Aqua had the least out of the three. That means the machine could spent more time in computation during Grey's run compared to Aqua as it has to fetch the data from the drive less often. This is also supported in next image!
 
-![Disk IO during every run](/assets/pictures/tiny_dumbo/tiny_dumbo_disk.png)
-<p align="center">
+![Disk IO during every run](/assets/pictures/tiny_dumbo/tiny_dumbo_disk.png) <p align="center">
   <em>Disk IO during every run</em>
 </p>
 
@@ -273,14 +268,12 @@ This bug almost made me quit this project. But I came back the next day and trai
 
 I wanted to experiment with different warmup_steps, during this, it was observed that no warmup steps resulted in the model's loss plateauing (probably NaN loss?) as shown bellow by the yellow run.
 
-![nan loss lr](/assets/pictures/tiny_dumbo/tiny_dumbo_nan_lr.png)
-<p align="center">
+![nan loss lr](/assets/pictures/tiny_dumbo/tiny_dumbo_nan_lr.png) <p align="center">
   <em>In the other runs the learning rate start from 0 and then rises to lr, here the learning rate start from lr</em>
 </p>
 
 
-![nan loss](/assets/pictures/tiny_dumbo/tiny_dumbo_nan.png)
-<p align="center">
+![nan loss](/assets/pictures/tiny_dumbo/tiny_dumbo_nan.png) <p align="center">
   <em>This was larger than any of the above models with 16 layers and 1024 d_model</em>
 </p>
 
